@@ -1,0 +1,406 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>色彩ラボ 第3回</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: projection-first lab bench (color series: neutral slate UI so the stimulus colors carry the meaning). Sticky header with one tab per demo; each demo = task area (left) + notes (right). */
+:root{
+  --bg:#f3f3f5; --panel:#ffffff; --ink:#1d2029; --muted:#5f6370; --line:#dcdde3;
+  --accent:#3d4f7c; --accent-ink:#ffffff; --ref:#b8741a; --soft:#e6e9f2; --soft2:#f7efe2;
+  --good:#2e7d4f; --bad:#b83a3a; --cell:#d3d5dd; --cell2:#a3a7b5;
+  --f-head:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --f-body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15161a; --panel:#1e2027; --ink:#e7e8ee; --muted:#9a9eab; --line:#30333d;
+  --accent:#9fb2e3; --accent-ink:#141a2a; --ref:#e3a44c; --soft:#232a3d; --soft2:#33291b;
+  --good:#6cc493; --bad:#ef7d7d; --cell:#3a3d48; --cell2:#5f6372; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15161a; --panel:#1e2027; --ink:#e7e8ee; --muted:#9a9eab; --line:#30333d;
+  --accent:#9fb2e3; --accent-ink:#141a2a; --ref:#e3a44c; --soft:#232a3d; --soft2:#33291b;
+  --good:#6cc493; --bad:#ef7d7d; --cell:#3a3d48; --cell2:#5f6372; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.hrow{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px;padding-block:14px 6px}
+h1{font-family:var(--f-head);font-weight:900;font-size:1.4rem;margin:0;letter-spacing:.02em}
+h1 small{font-family:var(--f-num);font-weight:600;font-size:.8rem;color:var(--accent);margin-right:8px;letter-spacing:.04em}
+.sub{color:var(--muted);font-size:.85rem}
+nav{display:flex;gap:4px;overflow-x:auto}
+nav button{font:inherit;font-size:.9rem;border:0;background:none;color:var(--muted);padding:8px 12px 10px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav button b{font-family:var(--f-num);font-weight:600;margin-right:6px;font-size:.8rem}
+nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding-block:22px 48px}
+section.tab{display:flex;flex-direction:column;gap:18px}
+.lead h2{font-family:var(--f-head);font-weight:900;font-size:1.55rem;margin:0 0 4px;text-wrap:balance}
+.lead p{margin:0;max-width:64em;color:var(--muted)}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;color:var(--accent);font-weight:700}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+@media (max-width:920px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.panel h3{font-family:var(--f-head);font-size:.95rem;margin:0 0 8px;font-weight:700}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.btn.big{font-size:1.05rem;padding:12px 22px;font-weight:700}
+.btn[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);font-weight:700}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.tile .k{font-size:.76rem;color:var(--muted);line-height:1.4}
+.tile .v{font-family:var(--f-num);font-size:1.45rem;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.3}
+.tile .d{font-family:var(--f-num);font-size:.74rem;color:var(--muted)}
+.points{background:var(--soft);border-radius:10px;padding:14px 16px}
+.points h3{font-family:var(--f-head);font-size:.95rem;margin:0 0 4px}
+.points ul,.points ol{margin:0;padding-left:1.2em}
+.points p{margin:0 0 6px}
+.ref{background:var(--soft2);border-radius:10px;padding:14px 16px}
+.ref h3{font-family:var(--f-head);font-size:.95rem;margin:0 0 4px;color:var(--ref)}
+.ref p,.ref ul{margin:0 0 4px}
+.ref ul{padding-left:1.2em}
+.src{font-size:.75rem;color:var(--muted);line-height:1.6;margin:0}
+.note{font-size:.78rem;color:var(--muted)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;font-size:.82rem;width:100%}
+td,th{padding:5px 7px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:500}
+td.n,th.n{text-align:right;font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:10px;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center;position:relative}
+.stim{font-family:var(--f-head);font-weight:700;font-size:clamp(1.5rem,4.5vw,2.6rem);line-height:1.3;min-height:1.4em}
+.fix{font-family:var(--f-num);font-size:2rem;color:var(--muted)}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys .btn{min-width:150px}
+kbd{font-family:var(--f-num);font-size:.8rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--bg)}
+.prog{height:4px;background:var(--line);border-radius:2px;width:100%;max-width:420px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);width:0}
+.fb{font-size:.9rem;min-height:1.6em;font-weight:700}
+.fb.ok{color:var(--good)} .fb.ng{color:var(--bad)}
+svg.chart{width:100%;height:auto;display:block;font-family:var(--f-num);font-size:11px}
+svg.chart .ax{stroke:var(--muted);stroke-width:1}
+svg.chart .gr{stroke:var(--line);stroke-width:1}
+svg.chart text{fill:var(--muted)}
+svg.chart .lab{fill:var(--ink);font-family:var(--f-body);font-size:12px}
+.s-you{stroke:var(--accent);fill:var(--accent)}
+.s-ref{stroke:var(--ref);fill:var(--ref)}
+.s-alt{stroke:var(--ink);fill:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.8rem;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:14px;height:3px;margin-right:6px;vertical-align:middle;background:currentColor}
+.legend .you{color:var(--accent)} .legend .refc{color:var(--ref)} .legend .alt{color:var(--ink)}
+textarea,input[type=text],input[type=number],select{font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);padding:6px 8px;width:100%}
+textarea{min-height:120px;resize:vertical}
+input[type=range]{width:100%;accent-color:var(--accent)}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted)}
+.likert{display:flex;gap:6px;flex-wrap:wrap}
+.likert button{font:inherit;font-family:var(--f-num);width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.likert button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.steps{display:flex;gap:6px;flex-wrap:wrap;font-size:.78rem}
+.steps span{padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.steps span.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.steps span.done{color:var(--ink)}
+.chip{display:inline-block;font-size:.75rem;padding:1px 8px;border-radius:999px;background:var(--soft);color:var(--accent);font-weight:700}
+.chip.r{background:var(--soft2);color:var(--ref)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+
+.faces{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+.faces svg{width:min(220px,40vw);height:auto;background:var(--bg);border-radius:10px}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 16px}
+.ctl output{font-family:var(--f-num);color:var(--ink);font-weight:600}
+.plate{width:100%;max-width:420px;height:auto;display:block;margin:0 auto;background:var(--bg);border-radius:10px}
+.meter{height:16px;background:var(--bg);border-radius:8px;position:relative;overflow:hidden;border:1px solid var(--line)}
+.meter i{position:absolute;top:0;bottom:0;left:0;background:var(--accent)}
+.swc{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:4px;border:1px solid var(--line)}
+.find{background:var(--bg);border-radius:8px;padding:8px 12px;font-size:.88rem}
+.qz{display:flex;flex-direction:column;gap:12px}
+.q{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.q h4{margin:0;font-family:var(--f-head);font-size:.98rem}
+.q .ans{background:var(--soft);border-radius:8px;padding:8px 12px;font-size:.88rem}
+.opt button.ok{background:var(--soft);border-color:var(--good);color:var(--good);font-weight:700}
+.opt button.ng{border-color:var(--bad);color:var(--bad)}
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="hrow"><h1><small>COLOR 3</small>色彩ラボ 第3回</h1><span class="sub">魅力・消費・食の色、そしてこれから：Elliot &amp; Maier (2014)</span></div>
+    <nav role="tablist" aria-label="デモの切り替え">
+      <button role="tab" data-t="skin" aria-selected="true"><b>A</b>肌の色</button>
+      <button role="tab" data-t="dish" aria-selected="false"><b>B</b>皿と料理の色</button>
+      <button role="tab" data-t="rep" aria-selected="false"><b>C</b>小さな研究と再現性</button>
+      <button role="tab" data-t="quiz" aria-selected="false"><b>D</b>買い物と食事の色クイズ</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+
+<section class="tab" id="skin" role="tabpanel">
+  <div class="lead"><div class="eyebrow">デモ A ／ 体験1「健康そうに見える顔は？」</div>
+    <h2>肌の色が少し違う2つの顔、健康的に見えるのはどちら</h2>
+    <p>イラストの顔を2つ並べ、肌の赤み・黄み・明るさ・むらのどれか1つだけを少し変えています。より健康的に見えるほうを選びます（<kbd>F</kbd>＝左、<kbd>J</kbd>＝右）。「自分で調整する」では、最も健康的に見えるよう色を自分で足してみます。</p></div>
+  <div class="grid">
+    <div class="col">
+      <div class="panel">
+        <div class="btns"><button class="btn" id="kM1" aria-pressed="true">2択で選ぶ（10問）</button><button class="btn" id="kM2" aria-pressed="false">自分で調整する</button></div>
+        <div id="kA" class="col" style="align-items:center;margin-top:12px">
+          <div class="stim" id="kHead" style="font-size:1.2rem">より健康的に見えるのは？</div>
+          <div class="faces"><svg id="fL" viewBox="0 0 200 240" aria-label="左の顔"></svg><svg id="fR" viewBox="0 0 200 240" aria-label="右の顔"></svg></div>
+          <div class="keys"><button class="btn big" id="kL"><kbd>F</kbd> 左</button><button class="btn big" id="kR"><kbd>J</kbd> 右</button></div>
+          <div class="prog"><i id="kProg"></i></div><button class="btn" id="kRestart" hidden>もう一度</button>
+        </div>
+        <div id="kB" class="col" hidden style="margin-top:12px">
+          <div class="faces"><svg id="fA" viewBox="0 0 200 240" aria-label="もとの顔"></svg><svg id="fB" viewBox="0 0 200 240" aria-label="調整した顔"></svg></div>
+          <p class="note" style="margin:0;text-align:center">左：もとの顔　右：調整した顔</p>
+          <div class="ctl"><label class="f">赤み（a*） <output id="oa">0</output><input type="range" id="sa" min="-10" max="10" step="1" value="0"></label><label class="f">黄み（b*） <output id="ob">0</output><input type="range" id="sb" min="-10" max="10" step="1" value="0"></label><label class="f">明るさ（L*） <output id="oL">0</output><input type="range" id="sL" min="-10" max="10" step="1" value="0"></label><label class="f">むら <output id="om">0</output><input type="range" id="sm" min="0" max="10" step="1" value="0"></label><label class="f">唇の赤みのコントラスト <output id="ol">0</output><input type="range" id="sl" min="-10" max="10" step="1" value="0"></label></div>
+          <div class="row"><button class="btn" id="kZero">もとに戻す</button><span class="note">「健康的に見える」ように動かしたあと、どの方向に動かしたかを確かめます。</span></div>
+        </div>
+      </div>
+      <div class="panel"><h3>結果：変えた属性ごとに、どちらを選んだか</h3><div class="tbl"><table id="kTable"></table></div></div>
+    </div>
+    <div class="col">
+      <div class="ref"><h3>総説で紹介された研究（Stephen, Perrett ら／Fink ら）</h3>
+        <ul><li>より<b>赤い</b>（血流）、より<b>黄色い</b>（カロテノイド）、より<b>明るい</b>顔が、より健康的・魅力的と評価される</li><li>肌の色が均一なほど、若く・健康的・魅力的に見える（Fink らの研究）</li><li>酸素の多い明るい赤の血の色は、青みがかった赤より健康的に見える</li>
+          <li>唇と顔の赤み・明るさのコントラストが大きいほど魅力的（特に女性の顔）</li><li>自分と同じ人種の顔で特に強い可能性。赤み・明るさの効果が見られない研究もある</li>
+          <li>参加者が顔に色を足す方法と、2つの顔から選ぶ方法の両方が使われている</li></ul></div>
+      <div class="points"><h3>授業での使い方</h3><ol><li>2択を10問行い、自分の選び方の傾向を見る</li><li>「自分で調整する」で、健康的に見えるよう動かす方向を確かめる</li><li>その判断に、どんな生物学的な理由がありそうかを話し合う</li></ol>
+        <p class="note" style="margin-top:6px">顔は写真ではなく講師作成のイラストです。肌の色の違いは画面によって変わるため、厳密な実験ではありません。</p></div>
+      <p class="src">Elliot &amp; Maier (2014), p.104–105（Color on the Skin）。むらの研究は Fink et al. (2006, 2008, 2012) ほか。</p>
+    </div>
+  </div>
+</section>
+
+<section class="tab" id="dish" role="tabpanel" hidden>
+  <div class="lead"><div class="eyebrow">デモ B ／ 体験3⑤ と食器の色</div>
+    <h2>料理と皿の色の対比</h2>
+    <p>皿の色と料理を選ぶと、料理と皿の色の違い（色差 ΔE）を計算し、その組み合わせに関係する研究を表示します。赤いソースのパスタを白い皿と赤い皿に盛ったとき、どちらで多く取りそうかを考えます。</p></div>
+  <div class="grid">
+    <div class="col">
+      <div class="panel">
+        <div class="col"><div><b>皿の色</b><div class="btns" id="dP" style="margin-top:4px"></div></div><div><b>料理</b><div class="btns" id="dF" style="margin-top:4px"></div></div></div>
+        <svg class="plate" id="dSvg" viewBox="0 0 400 260" style="margin-top:12px"></svg>
+        <div style="margin-top:10px"><div class="row" style="justify-content:space-between"><b>料理と皿の色の違い（ΔE）</b><span class="note" id="dT"></span></div><div class="meter"><i id="dG"></i></div></div>
+        <div class="find" id="dFind" style="margin-top:10px"></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="ref"><h3>総説で紹介された食器の色の研究</h3>
+        <ul><li>赤いソースのパスタを白い皿に、白いソースのパスタを赤い皿に盛ると、色が同じ組み合わせより取る量が<b>少ない</b>（Van Ittersum &amp; Wansink 2011）</li>
+          <li>いちごのムースは、黒い皿より白い皿で、より甘く・濃く・おいしく感じられた（Piqueras-Fiszman et al. 2012）</li><li>赤い皿のお菓子は食べる量が減り、赤いラベルのカップでは飲む量が減る（Genschow et al. 2012）</li>
+          <li>赤ワインは青いグラスで、味の評価が上がった（Ross et al. 2009）</li><li>最初の2つは、色の連想ではなく<b>色の対比</b>という知覚の効果と考えられる</li></ul></div>
+      <div class="points"><h3>授業での使い方</h3><ol><li>赤いパスタで、白い皿と赤い皿を切り替える</li><li>ΔE の違いと、取る量の予測を確かめる</li><li>「赤い皿のお菓子」（連想）と「白い皿のパスタ」（対比）の違いを説明する</li></ol>
+        <p class="note" style="margin-top:6px">料理と皿の色は講師が設定した代表値です。ΔE は CIELAB での計算値（ΔE76）です。</p></div>
+      <p class="src">Elliot &amp; Maier (2014), p.110（Highlights from Other Research Areas）。</p>
+    </div>
+  </div>
+</section>
+
+<section class="tab" id="rep" role="tabpanel" hidden>
+  <div class="lead"><div class="eyebrow">デモ C ／ 今後の課題と【講師補足】総説のその後</div>
+    <h2>小さな研究を積み重ねると、効果はどう見えるか</h2>
+    <p>本当は小さな効果を、少人数の研究で何十回も調べます。「有意な結果だけが出版される」とき、出版された研究の効果の平均がどう見えるかを確かめます。最後に、大人数の事前登録された追試を1回だけ行います。</p></div>
+  <div class="grid">
+    <div class="col">
+      <div class="panel">
+        <div class="ctl">
+          <label class="f">本当の効果の大きさ d <output id="oTd">0.20</output><input type="range" id="sTd" min="0" max="0.8" step="0.05" value="0.2"></label>
+          <label class="f">1群の人数 <output id="oNn">20</output><input type="range" id="sNn" min="10" max="200" step="10" value="20"></label>
+          <label class="f">研究の数<select id="sK"><option>20</option><option selected>40</option><option>100</option></select></label>
+        </div>
+        <div class="row" style="margin-top:8px"><label class="row note"><input type="checkbox" id="cPB" checked> 有意な結果（p &lt; .05）だけが出版される</label><label class="row note"><input type="checkbox" id="cVar"> 研究ごとに人数をばらつかせる（10〜100人）</label></div>
+        <div class="row" style="margin-top:8px"><button class="btn primary" id="rGo">研究を行う</button><button class="btn" id="rBig">大規模な事前登録の追試（各群500人）</button></div>
+      </div>
+      <div class="panel"><h3 id="rHead">各研究で観察された効果</h3>
+        <div class="legend"><span class="you">出版された研究</span><span class="alt" style="opacity:.5">出版されなかった研究</span><span class="refc">本当の効果</span></div>
+        <svg class="chart" id="rCh"></svg><div class="tiles" id="rTl"></div></div>
+    </div>
+    <div class="col">
+      <div class="ref"><h3>総説が挙げた今後の課題</h3>
+        <ul><li>多くの研究は<b>検定力</b>が不足している。より大きなサンプルのほうが、効果の大きさを安定して正確に推定できる</li><li>色を厳密に統制した研究（分光測色計など）が必要</li>
+          <li>参加者の多くが大学生。年齢や学歴などの多様なサンプルが必要</li><li>実験室の効果から、すぐに現実への応用を語らないこと。証拠が積み重なるのを待つべき</li></ul></div>
+      <div class="points"><h3>【講師補足】総説のその後</h3><p>2010年代、心理学全体で再現性の見直しが進み、色彩心理学でも事前登録された大規模な追試やメタ分析が行われました。「ロマンチックな赤」などでは、効果が小さい、またははっきりしない結果も報告されています。</p>
+        <p class="note">このタブのシミュレーションと補足は総説（2014）の範囲外です。授業前に最新の文献を確認してください。モデルとパラメータは講師が設定した模式です。</p></div>
+      <p class="src">Elliot &amp; Maier (2014), Future Directions（p.110–112）。シミュレーションは講師作成。</p>
+    </div>
+  </div>
+</section>
+
+<section class="tab" id="quiz" role="tabpanel" hidden>
+  <div class="lead"><div class="eyebrow">デモ D ／ 体験3「買い物と食事の色クイズ」</div>
+    <h2>直感で答えて、研究の結果と比べる</h2>
+    <p>5問のクイズです。答えを選ぶと、正解と解説、研究が表示されます。</p></div>
+  <div class="grid">
+    <div class="col"><div class="qz" id="qz"></div><div class="panel"><div class="row" style="justify-content:space-between"><b id="qScore"></b><button class="btn" id="qReset">やり直す</button></div></div></div>
+    <div class="col">
+      <div class="points"><h3>授業での使い方</h3><ol><li>投影して全員で答える、または各自で答える</li><li>③（連想）と⑤（対比）の違いを確認する</li><li>「この知見を店や家庭でそのまま使ってよいか」を話し合う（実験室から現実へ）</li></ol></div>
+      <div class="ref"><h3>まとめ</h3><ul><li>消費と食の場面でも、色は判断や行動に影響しうる</li><li>ただし多くは少数の研究にもとづく。効果の大きさや再現性はまだわからない（デモ C）</li></ul></div>
+      <p class="src">Elliot &amp; Maier (2014), p.110。Labrecque &amp; Milne (2012, 2013)、Puccinelli et al. (2013)、Genschow et al. (2012)、Ross et al. (2009)、Van Ittersum &amp; Wansink (2011)。</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+// ---- common ----
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:NaN;
+const fmt=(x,d=0)=>Number.isFinite(x)?x.toFixed(d):'—';
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function linreg(pts){const n=pts.length;if(n<2)return null;const mx=mean(pts.map(p=>p[0])),my=mean(pts.map(p=>p[1]));let sxy=0,sxx=0;for(const[x,y]of pts){sxy+=(x-mx)*(y-my);sxx+=(x-mx)**2}if(!sxx)return null;const b=sxy/sxx;return{a:my-b*mx,b}}
+// chart(svg,{W,H,xd,yd,xt,yt,xl,yl,xfmt,series:[{pts,cls,line,dots,dash,r}]})
+function chart(svg,o){
+  const W=o.W||520,H=o.H||300,m={l:56,r:16,t:16,b:44};svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML='';
+  const X=v=>m.l+(v-o.xd[0])/(o.xd[1]-o.xd[0])*(W-m.l-m.r), Y=v=>H-m.b-(v-o.yd[0])/(o.yd[1]-o.yd[0])*(H-m.t-m.b);
+  for(const t of o.yt){el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),class:'gr'},svg);el('text',{x:m.l-6,y:Y(t)+4,'text-anchor':'end'},svg).textContent=(o.yfmt||String)(t)}
+  for(const t of o.xt){el('text',{x:X(t),y:H-m.b+16,'text-anchor':'middle'},svg).textContent=(o.xfmt||String)(t)}
+  el('line',{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,class:'ax'},svg);el('line',{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:'ax'},svg);
+  if(o.xl)el('text',{x:(m.l+W-m.r)/2,y:H-6,'text-anchor':'middle',class:'lab'},svg).textContent=o.xl;
+  if(o.yl){const t=el('text',{x:14,y:(m.t+H-m.b)/2,'text-anchor':'middle',class:'lab',transform:`rotate(-90 14 ${(m.t+H-m.b)/2})`},svg);t.textContent=o.yl}
+  for(const s of o.series){
+    const pts=s.pts.filter(p=>Number.isFinite(p[1]));
+    if(s.line&&pts.length>1){el('polyline',{points:pts.map(p=>X(p[0])+','+Y(p[1])).join(' '),class:s.cls,fill:'none','stroke-width':s.w||2.5,'stroke-dasharray':s.dash||'','stroke-opacity':s.sop||1,style:'fill:none'},svg)}
+    if(s.dots!==false)for(const p of pts){const c=el('circle',{cx:X(p[0]),cy:Y(p[1]),r:s.r||4,class:s.cls,'fill-opacity':s.op||1,style:'stroke:none'},svg)}
+    if(s.labels)for(const p of pts){el('text',{x:X(p[0])+7,y:Y(p[1])-6,class:s.cls,style:'stroke:none;font-size:11px'},svg).textContent=s.labels(p)}
+  }
+  return {X,Y};
+}
+function bars(svg,o){ // o:{W,H,cats,groups:[{name,cls,vals}],yd,yt,yl}
+  const W=o.W||520,H=o.H||280,m={l:56,r:16,t:16,b:44};svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML='';
+  const Y=v=>H-m.b-(v-o.yd[0])/(o.yd[1]-o.yd[0])*(H-m.t-m.b);const cw=(W-m.l-m.r)/o.cats.length,g=o.groups.length,bw=Math.min(46,cw*0.7/g);
+  for(const t of o.yt){el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),class:'gr'},svg);el('text',{x:m.l-6,y:Y(t)+4,'text-anchor':'end'},svg).textContent=(o.yfmt||String)(t)}
+  o.cats.forEach((c,i)=>{const cx=m.l+cw*(i+.5);el('text',{x:cx,y:H-m.b+16,'text-anchor':'middle',class:'lab'},svg).textContent=c;
+    o.groups.forEach((gr,j)=>{const v=gr.vals[i];if(!Number.isFinite(v))return;const x=cx-g*bw/2+j*bw+2;el('rect',{x,y:Y(Math.max(v,o.yd[0])),width:bw-4,height:Math.max(0,Y(o.yd[0])-Y(v)),class:gr.cls,style:'stroke:none'},svg);
+      el('text',{x:x+(bw-4)/2,y:Y(v)-4,'text-anchor':'middle',class:gr.cls,style:'stroke:none'},svg).textContent=(o.vfmt||(v=>fmt(v,0)))(v)})});
+  el('line',{x1:m.l,x2:W-m.r,y1:Y(o.yd[0]),y2:Y(o.yd[0]),class:'ax'},svg);
+  if(o.yl){const t=el('text',{x:14,y:(m.t+H-m.b)/2,'text-anchor':'middle',class:'lab',transform:`rotate(-90 14 ${(m.t+H-m.b)/2})`},svg);t.textContent=o.yl}
+}
+function copyText(btn,text){const done=()=>{const o=btn.textContent;btn.textContent='コピーしました';setTimeout(()=>btn.textContent=o,1500)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done,()=>fallback())}else fallback();
+  function fallback(){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(e){}ta.remove()}}
+
+// ---- color utilities (sRGB D65 <-> CIELAB / LCh) ----
+const CU=(()=>{
+  const Xn=0.95047,Yn=1,Zn=1.08883;
+  const lin=c=>c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4), gam=c=>c<=0.0031308?12.92*c:1.055*Math.pow(c,1/2.4)-0.055;
+  function rgb2lab([r,g,b]){[r,g,b]=[r,g,b].map(v=>lin(v/255));const X=(0.4124*r+0.3576*g+0.1805*b)/Xn,Y=(0.2126*r+0.7152*g+0.0722*b)/Yn,Z=(0.0193*r+0.1192*g+0.9505*b)/Zn;
+    const f=t=>t>216/24389?Math.cbrt(t):(24389/27*t+16)/116;const fx=f(X),fy=f(Y),fz=f(Z);return[116*fy-16,500*(fx-fy),200*(fy-fz)]}
+  function lab2rgb([L,a,b]){const fy=(L+16)/116,fx=fy+a/500,fz=fy-b/200;const fi=t=>t**3>216/24389?t**3:(116*t-16)/(24389/27);
+    const X=fi(fx)*Xn,Y=fi(fy)*Yn,Z=fi(fz)*Zn;const r=3.2406*X-1.5372*Y-0.4986*Z,g=-0.9689*X+1.8758*Y+0.0415*Z,bb=0.0557*X-0.2040*Y+1.0570*Z;
+    const raw=[r,g,bb];const out=raw.some(v=>v<-0.002||v>1.002);return{rgb:raw.map(v=>Math.round(255*gam(Math.min(1,Math.max(0,v))))),out,lin:raw}}
+  const lch2lab=([L,C,h])=>[L,C*Math.cos(h*Math.PI/180),C*Math.sin(h*Math.PI/180)];
+  const lab2lch=([L,a,b])=>[L,Math.hypot(a,b),(Math.atan2(b,a)*180/Math.PI+360)%360];
+  const hex=rgb=>'#'+rgb.map(v=>v.toString(16).padStart(2,'0')).join('');
+  const fromHex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+  const dE=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1],p[2]-q[2]);
+  const linToRgb=l=>l.map(v=>Math.round(255*gam(Math.min(1,Math.max(0,v)))));
+  const rgbToLin=rgb=>rgb.map(v=>lin(v/255));
+  return{rgb2lab,lab2rgb,lch2lab,lab2lch,hex,fromHex,dE,linToRgb,rgbToLin,lch:(L,C,h)=>lab2rgb(lch2lab([L,C,h]))};
+})();
+// ================= A: skin color =================
+const SKIN=[70,13,19];
+const BLOT=[[78,96,16,11],[122,98,14,10],[96,128,12,8],[70,140,13,9],[128,140,12,9],[100,74,18,7],[110,160,10,7]];
+function face(svg,o){const L=SKIN[0]+(o.dL||0),a=SKIN[1]+(o.da||0),b=SKIN[2]+(o.db||0);const sk=CU.hex(CU.lab2rgb([L,a,b]).rgb);
+  const bl=CU.hex(CU.lab2rgb([L-7,a+9,b+3]).rgb);const lip=CU.hex(CU.lab2rgb([L-20,a+20+(o.lip||0)*1.6,b-4]).rgb);
+  svg.innerHTML=`<ellipse cx="100" cy="100" rx="66" ry="74" fill="#3a2a20"/>
+  <rect x="84" y="182" width="32" height="40" fill="${sk}"/><path d="M40 240 Q46 206 100 204 Q154 206 160 240 Z" fill="#7d8597"/>
+  <ellipse cx="100" cy="118" rx="58" ry="74" fill="${sk}"/>
+  ${BLOT.map(([x,y,rx,ry])=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${bl}" opacity="${(o.mura||0)*.75}"/>`).join('')}
+  <path d="M42 96 Q48 44 100 42 Q152 44 158 96 Q150 60 100 58 Q50 60 42 96 Z" fill="#3a2a20"/>
+  <path d="M66 98 q12 -6 24 0 M110 98 q12 -6 24 0" stroke="#3a2a20" stroke-width="3" fill="none"/>
+  <ellipse cx="78" cy="112" rx="7" ry="4.5" fill="#2a2a30"/><ellipse cx="122" cy="112" rx="7" ry="4.5" fill="#2a2a30"/>
+  <path d="M100 116 q-4 22 -8 28 q8 4 16 0" stroke="rgba(0,0,0,.28)" stroke-width="2" fill="none"/>
+  <path d="M84 160 q16 -7 32 0 q-16 12 -32 0 Z" fill="${lip}"/>`}
+const KT=shuffle([...Array(3).fill('a'),...Array(3).fill('b'),...Array(2).fill('L'),...Array(2).fill('m')]);
+const KN={a:'赤み',b:'黄み',L:'明るさ',m:'むら'},KMORE={a:'より赤い顔',b:'より黄色い顔',L:'より明るい顔',m:'むらのない顔'},KDIR={a:'より赤い顔が健康的・魅力的',b:'より黄色い顔が健康的・魅力的',L:'より明るい顔が健康的・魅力的',m:'むらのない顔が若く・健康的'};
+let K={trials:[],i:0,res:store.get('c3skin',null),on:false};
+const attrSet=(k,s)=>k==='a'?{da:3*s}:k==='b'?{db:3*s}:k==='L'?{dL:3*s}:{mura:s>0?0:.7};
+function kStart(){K.trials=shuffle(KT).map(k=>({k,moreLeft:Math.random()<.5}));K.i=0;K.data=[];$('#kRestart').hidden=true;$('#kL').disabled=false;$('#kR').disabled=false;kNext()}
+function kNext(){if(K.i>=K.trials.length)return kEnd();const t=K.trials[K.i];$('#kProg').style.width=(100*K.i/K.trials.length)+'%';$('#kHead').textContent=`より健康的に見えるのは？（${K.i+1}／${K.trials.length}）`;
+  face($('#fL'),attrSet(t.k,t.moreLeft?1:-1));face($('#fR'),attrSet(t.k,t.moreLeft?-1:1));K.on=true}
+function kResp(left){if(!K.on)return;K.on=false;const t=K.trials[K.i];K.data.push({k:t.k,more:left===t.moreLeft});K.i++;setTimeout(kNext,250)}
+function kEnd(){$('#kHead').textContent='おつかれさまでした';$('#kProg').style.width='100%';$('#kRestart').hidden=false;$('#kL').disabled=true;$('#kR').disabled=true;
+  const r={};for(const k of'abLm'){const d=K.data.filter(x=>x.k===k);r[k]=[d.filter(x=>x.more).length,d.length]}K.res=r;store.set('c3skin',r);kTable()}
+function kTable(){$('#kTable').innerHTML='<tr><th>変えた属性</th><th class="n">選んだ回数</th><th>研究で見られた方向</th></tr>'+[...'abLm'].map(k=>{const r=K.res&&K.res[k];return`<tr><td>${KN[k]}</td><td class="n">${r?`${KMORE[k]}を ${r[0]}／${r[1]}`:'—'}</td><td>${KDIR[k]}</td></tr>`}).join('')}
+$('#kL').onclick=()=>kResp(true);$('#kR').onclick=()=>kResp(false);$('#kRestart').onclick=kStart;
+document.addEventListener('keydown',e=>{if($('#skin').hidden||$('#kA').hidden)return;if(e.key==='f'||e.key==='F')kResp(true);if(e.key==='j'||e.key==='J')kResp(false)});
+function kMode(m){$('#kM1').setAttribute('aria-pressed',m===1?'true':'false');$('#kM2').setAttribute('aria-pressed',m===2?'true':'false');$('#kA').hidden=m!==1;$('#kB').hidden=m!==2;if(m===2)adj()}
+$('#kM1').onclick=()=>kMode(1);$('#kM2').onclick=()=>kMode(2);
+function adj(){const v=id=>+$('#'+id).value;['a','b','L','m','l'].forEach(k=>$('#o'+k).textContent=(v('s'+k)>0&&k!=='m'?'+':'')+v('s'+k));
+  face($('#fA'),{});face($('#fB'),{da:v('sa'),db:v('sb'),dL:v('sL'),mura:v('sm')/10,lip:v('sl')})}
+['sa','sb','sL','sm','sl'].forEach(id=>$('#'+id).oninput=adj);$('#kZero').onclick=()=>{['sa','sb','sL','sm','sl'].forEach(id=>$('#'+id).value=0);adj()};
+kStart();kTable();
+
+// ================= B: plate & food =================
+const PLATES=[['白',[95,0,2]],['赤',[44,58,38]],['黒',[18,0,0]],['青',[45,4,-44]]];
+const FOODS=[['赤いソースのパスタ',[44,50,40]],['白いソースのパスタ',[90,0,12]],['いちごのムース',[76,24,7]]];
+let DS={p:0,f:0};
+function dishDraw(){
+  $('#dP').innerHTML=PLATES.map(([n,l],i)=>`<button class="btn" data-i="${i}" aria-pressed="${i===DS.p}"><span class="swc" style="background:${CU.hex(CU.lab2rgb(l).rgb)}"></span>${n}</button>`).join('');
+  $('#dF').innerHTML=FOODS.map(([n,l],i)=>`<button class="btn" data-i="${i}" aria-pressed="${i===DS.f}"><span class="swc" style="background:${CU.hex(CU.lab2rgb(l).rgb)}"></span>${n}</button>`).join('');
+  $$('#dP button').forEach(b=>b.onclick=()=>{DS.p=+b.dataset.i;dishDraw()});$$('#dF button').forEach(b=>b.onclick=()=>{DS.f=+b.dataset.i;dishDraw()});
+  const P=PLATES[DS.p],F=FOODS[DS.f];const pc=CU.hex(CU.lab2rgb(P[1]).rgb),fc=CU.hex(CU.lab2rgb(F[1]).rgb),rim=CU.hex(CU.lab2rgb([P[1][0]-10,P[1][1]*.9,P[1][2]*.9]).rgb);
+  const pasta=DS.f<2?`${[0,1,2,3,4,5,6].map(i=>`<path d="M${150+i*14} ${118+(i%3)*6} q20 ${-10+(i%2)*20} 40 0 t40 0" stroke="${CU.hex(CU.lab2rgb([80,2,30]).rgb)}" stroke-width="5" fill="none" opacity="${DS.f===0?.5:.35}"/>`).join('')}`:'';
+  $('#dSvg').innerHTML=`<ellipse cx="200" cy="138" rx="176" ry="98" fill="${rim}"/><ellipse cx="200" cy="132" rx="164" ry="88" fill="${pc}"/><ellipse cx="200" cy="132" rx="120" ry="62" fill="none" stroke="rgba(0,0,0,.12)"/>
+   <path d="M136 132 q10 -44 64 -46 q58 2 66 44 q-6 40 -66 42 q-58 -2 -64 -40 Z" fill="${fc}"/>${pasta}`;
+  const de=CU.dE(F[1],P[1]);$('#dG').style.width=Math.min(100,de)+'%';$('#dT').textContent=`ΔE ${fmt(de)}：${de<30?'対比が小さい（料理が皿にとけこむ）':de<60?'中くらい':'対比が大きい（料理がくっきり見える）'}`;
+  const notes=[];
+  if((DS.f===0&&DS.p===1)||(DS.f===1&&DS.p===0))notes.push('料理と皿の色が同じ組み合わせ：<b>取る量が多くなる</b>（Van Ittersum &amp; Wansink 2011 の「色が同じ」条件）');
+  if((DS.f===0&&DS.p===0)||(DS.f===1&&DS.p===1))notes.push('料理と皿の色が対比する組み合わせ：色が同じ組み合わせより<b>取る量が少ない</b>（Van Ittersum &amp; Wansink 2011）');
+  if(DS.f===2&&(DS.p===0||DS.p===2))notes.push('いちごのムースは、黒い皿より<b>白い皿</b>でより甘く・濃く・おいしく感じられた（Piqueras-Fiszman et al. 2012）');
+  if(DS.p===1)notes.push('赤い皿では、お菓子を<b>食べる量が減った</b>（Genschow et al. 2012）。これは対比ではなく「赤＝止まれ」の連想による可能性');
+  if(!notes.length)notes.push('この組み合わせを直接調べた研究は、総説では紹介されていません。ΔE から、対比の大きさだけを考えてみましょう。');
+  $('#dFind').innerHTML='<b>関係する研究</b><br>'+notes.join('<br>');
+}
+dishDraw();
+
+// ================= C: small studies & replication =================
+const rnorm=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+let RP={st:[],big:null};
+['sTd','sNn'].forEach(id=>$('#'+id).oninput=()=>{$('#oTd').textContent=(+$('#sTd').value).toFixed(2);$('#oNn').textContent=$('#sNn').value});
+function study(n,d){const se=Math.sqrt(2/n+d*d/(4*n));const o=d+se*rnorm();return{n,o,sig:o/Math.sqrt(2/n)>1.96}}
+function rRun(){const d=+$('#sTd').value,n=+$('#sNn').value,K=+$('#sK').value,v=$('#cVar').checked;RP.st=[];RP.big=null;for(let i=0;i<K;i++)RP.st.push(study(v?10+Math.floor(Math.random()*10)*10:n,d));RP.d=d;rDraw()}
+function rDraw(){const pb=$('#cPB').checked,d=RP.d,byN=RP.st.length&&RP.st.some(x=>x.n!==RP.st[0].n);RP.st.forEach((x,i)=>x.y=byN?x.n:i+1);
+  const pub=RP.st.filter(s=>!pb||s.sig),un=RP.st.filter(s=>pb&&!s.sig);
+  let ymax,yt,yl;if(byN){ymax=RP.big?540:110;yt=RP.big?[0,100,200,300,400,500]:[0,25,50,75,100];yl='1群の人数'}else{ymax=RP.st.length+(RP.big?4:1);yt=[];for(let v=0;v<=ymax;v+=10)yt.push(v);yl='研究の番号'}
+  if(RP.big)RP.big.y=byN?RP.big.n:RP.st.length+3;
+  const pm=mean(pub.map(s=>s.o));const S=[{pts:[[d,0],[d,ymax]],cls:'s-ref',line:true,dots:false,w:2},{pts:un.map(s=>[s.o,s.y]),cls:'s-alt',r:4,op:.3},{pts:pub.map(s=>[s.o,s.y]),cls:'s-you',r:4.5}];
+  if(pub.length)S.push({pts:[[pm,0],[pm,ymax]],cls:'s-you',line:true,dots:false,dash:'6 4',w:2});if(RP.big)S.push({pts:[[RP.big.o,RP.big.y]],cls:'s-ref',r:8,labels:()=>'大規模な追試'});
+  $('#rHead').textContent=byN?'各研究で観察された効果（縦軸：1群の人数）':'各研究で観察された効果（縦軸：研究の番号）';
+  chart($('#rCh'),{xd:[-0.8,1.6],yd:[0,ymax],xt:[-0.5,0,0.5,1,1.5],yt,xfmt:v=>v.toFixed(1),xl:'観察された効果の大きさ d（点線＝出版された研究の平均）',yl,series:S,H:320});
+  const pw=RP.st.filter(s=>s.sig).length/RP.st.length;
+  $('#rTl').innerHTML=`<div class="tile"><div class="k">本当の効果</div><div class="v">${fmt(d,2)}</div></div><div class="tile"><div class="k">有意になった研究の割合（検定力の目安）</div><div class="v">${fmt(pw*100)}%</div><div class="d">${RP.st.length}研究</div></div><div class="tile"><div class="k">出版された研究の平均 d</div><div class="v">${pub.length?fmt(pm,2):'—'}</div><div class="d">${pub.length}研究</div></div><div class="tile"><div class="k">大規模な追試の d</div><div class="v">${RP.big?fmt(RP.big.o,2):'—'}</div><div class="d">${RP.big?'各群500人':'ボタンで実行'}</div></div>`}
+$('#rGo').onclick=rRun;$('#rBig').onclick=()=>{if(!RP.st.length)rRun();RP.big=study(500,RP.d);rDraw()};$('#cPB').onchange=()=>{if(RP.st.length)rDraw()};
+rRun();
+
+// ================= D: quiz =================
+const QZ=[['大企業のロゴで最も多く使われている色は？',['赤','青','緑','黒'],1,'青が最も多く、ロゴの文脈では有能さの知覚と結びつく。','Labrecque & Milne (2012, 2013)'],
+ ['価格を赤で表示すると、男性は黒の表示より「お得」と感じる？',['感じる','感じない'],0,'男性は、赤で表示された価格をよりお得と感じた。','Puccinelli et al. (2013)'],
+ ['赤い皿に盛ったお菓子は、ほかの色の皿より、食べる量が？',['増える','減る'],1,'食べる量が減った。赤いラベルのカップでは飲む量が減った。「赤＝止まれ」の連想と考えられる。','Genschow et al. (2012)'],
+ ['同じ赤ワインを青いグラスで飲むと、味の評価は？',['上がる','下がる'],0,'青いグラスで飲むと、味の評価が上がった。','Ross et al. (2009)'],
+ ['赤いソースのパスタを白い皿に盛ると、赤い皿のときより、自分で取る量は？',['多い','少ない'],1,'色が対比する白い皿のほうが、取る量が少なかった。連想ではなく、色の対比という知覚の効果と考えられる。','Van Ittersum & Wansink (2011)']];
+let QA=[];
+function qDraw(){$('#qz').innerHTML=QZ.map(([q,opts,ans,ex,src],i)=>`<div class="q"><h4>${'①②③④⑤'[i]} ${q}</h4><div class="btns opt">${opts.map((o,j)=>`<button class="btn ${QA[i]!==undefined?(j===ans?'ok':j===QA[i]?'ng':''):''}" data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div>${QA[i]!==undefined?`<div class="ans"><b>${QA[i]===ans?'正解':'正解は「'+opts[ans]+'」'}</b>　${ex}<br><span class="note">${src}</span></div>`:''}</div>`).join('');
+  $$('#qz button').forEach(b=>b.onclick=()=>{const q=+b.dataset.q;if(QA[q]===undefined){QA[q]=+b.dataset.o;qDraw()}});
+  const n=QA.filter(x=>x!==undefined).length,c=QZ.filter((x,i)=>QA[i]===x[2]).length;$('#qScore').textContent=n?`${n}問中 ${c}問 正解`:'答えを選ぶと、正解と解説が表示されます'}
+$('#qReset').onclick=()=>{QA=[];qDraw()};qDraw();
+
+// tabs
+(function(){const tabs=$$('nav [role=tab]');const key='tab:'+document.title;
+  function show(t){tabs.forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t?'true':'false'));$$('section.tab').forEach(s=>s.hidden=s.id!==t);store.set(key,t);if(window.onTab)window.onTab(t)}
+  tabs.forEach(b=>b.addEventListener('click',()=>{show(b.dataset.t);if(location.hash!=='#'+b.dataset.t)history.replaceState(null,'','#'+b.dataset.t)}));
+  const h=location.hash.slice(1);show(tabs.some(b=>b.dataset.t===h)?h:store.get(key,tabs[0].dataset.t));
+  window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(tabs.some(b=>b.dataset.t===h))show(h)})})();
+
+</script>
+
+</body></html>
